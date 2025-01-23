@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from loguru import logger
 
-from startup import add_logging
+from src.startup import add_logging
 
 add_logging()
 
