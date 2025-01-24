@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class BaseConfig(BaseSettings):
-    MODE: Optional[str] = "dev"
+    MODE: Optional[str] = None
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
@@ -33,5 +33,3 @@ def get_config(env_mode: str):
 
 
 config = get_config(BaseConfig().MODE)
-
-print(f" <<<<<<{config}>>>>>>")
