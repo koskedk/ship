@@ -1,6 +1,7 @@
 from functools import lru_cache
 from typing import Optional
 
+from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -29,6 +30,9 @@ class TestConfig(GlobalConfig):
 @lru_cache()
 def get_config(env_mode: str):
     configs = {"dev": DevConfig, "prod": ProdConfig, "test": TestConfig}
+    if env_mode is None:
+        logger.warning("Missing mode ! running in [dev] mode")
+        env_mode = "dev"
     return configs[env_mode]()
 
 
