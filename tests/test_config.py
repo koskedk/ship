@@ -1,21 +1,26 @@
-from src.config import DevConfig, ProdConfig, TestConfig, config
+import logging
+
+import pytest
+from pydantic_settings import SettingsConfigDict
+
+from src.config import GlobalConfig
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 
-def test_dev_config():
-    cfg = DevConfig()
+@pytest.mark.parametrize("mode", ["DEV_", "TEST_", "PROD_"])
+def test_dev_config(mode):
+    cfg = get_config(mode)
+
     assert cfg.DATABASE_URL is not None
+    logging.info(cfg.DATABASE_URL)
 
 
-def test_prod_config():
-    cfg = ProdConfig()
-    assert cfg.DATABASE_URL is not None
+def get_config(prefix: str):
+    class Config(GlobalConfig):
+        model_config = SettingsConfigDict(
+            env_file="tests\\.env.test", env_prefix=prefix
+        )
 
-
-def test_test_config():
-    cfg = TestConfig()
-    assert cfg.DATABASE_URL is not None
-
-
-def test_get_config():
-    cfg = config
-    assert cfg.DATABASE_URL is not None
+    return Config()
