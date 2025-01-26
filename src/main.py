@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from loguru import logger
 
-from src.config import config
+from src.config import get_settings
 from src.startup import add_logging
 
 add_logging()
-
+config = get_settings()
 
 logger.info("starting livesync.ship...")
 app = FastAPI(title="livesync.ship")

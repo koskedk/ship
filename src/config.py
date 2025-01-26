@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from typing import Optional
 
@@ -5,35 +6,38 @@ from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class BaseConfig(BaseSettings):
+def get_env_file(env_mode: Optional[str] = None):
+    mode = os.getenv("MODE")
+    if env_mode:
+        mode = env_mode
+    if not mode or mode.lower() == "production":
+        file = ".env"
+    else:
+        file = f".env.{mode}".lower()
+    logger.info(f"running in {mode} >> {file}")
+    return file
+
+
+class AppSettings(BaseSettings):
     MODE: Optional[str] = None
-
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
-
-
-class GlobalConfig(BaseConfig):
     DATABASE_URL: Optional[str] = None
-
-
-class DevConfig(GlobalConfig):
-    model_config = SettingsConfigDict(env_prefix="DEV_")
-
-
-class ProdConfig(GlobalConfig):
-    model_config = SettingsConfigDict(env_prefix="PROD_")
-
-
-class TestConfig(GlobalConfig):
-    model_config = SettingsConfigDict(env_prefix="TEST_")
+    SOURCE: Optional[str] = None
+    SOURCE_DB: Optional[str] = None
+    SOURCE_HOST: Optional[str] = None
+    SOURCE_PORT: Optional[int] = None
+    SOURCE_USER: Optional[str] = None
+    SOURCE_PASS: Optional[str] = None
+    SOURCE_SSL: Optional[bool] = None
+    DESTINATION: Optional[str] = None
+    DESTINATION_DB: Optional[str] = None
+    DESTINATION_HOST: Optional[str] = None
+    DESTINATION_PORT: Optional[int] = None
+    DESTINATION_USER: Optional[str] = None
+    DESTINATION_PASS: Optional[str] = None
+    DESTINATION_SSL: Optional[bool] = None
+    model_config = SettingsConfigDict(extra="ignore")
 
 
 @lru_cache()
-def get_config(env_mode: str):
-    configs = {"dev": DevConfig, "prod": ProdConfig, "test": TestConfig}
-    if env_mode is None:
-        logger.warning("Missing mode ! running in [dev] mode")
-        env_mode = "dev"
-    return configs[env_mode]()
-
-
-config = get_config(BaseConfig().MODE)
+def get_settings(env_mode: Optional[str] = None):
+    return AppSettings(_env_file=get_env_file(env_mode))
