@@ -1,7 +1,13 @@
+import os
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 
+from src.config import get_settings
 from src.main import app
+
+os.environ["MODE"] = "testing"
+get_settings.cache_clear()
 
 
 @pytest.mark.anyio
