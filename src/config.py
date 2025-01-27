@@ -40,4 +40,4 @@ class AppSettings(BaseSettings):
 
 @lru_cache()
 def get_settings(env_mode: Optional[str] = None):
-    return AppSettings(_env_file=get_env_file(env_mode))
+    return AppSettings(_env_file=(get_env_file(env_mode)))
