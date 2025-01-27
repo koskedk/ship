@@ -36,6 +36,8 @@ class SourceReader:
 
         src = ab.get_source(
             cfg.name,
-            config=cfg.config.to_json())
+            config=cfg.config.to_json(),
+            install_if_missing=True,
+        )
         src.check()
         return True
